@@ -136,7 +136,11 @@ if [ -r /.firstboot.tmp ]; then
                 echo "Setting the MISP instance email ($MISP_INSTANCE_EMAIL) ..."
                 /var/www/MISP/app/Console/cake Admin setSetting "MISP.email" "$MISP_INSTANCE_EMAIL"
         fi
-
+	
+        # Update DB with latest Galaxies, Noticelists, Warninglists,
+        # Taxonomies, ObjectTemplates, and ObjectRelationships
+        /var/www/MISP/app/Console/cake Admin updateJSON
+        
         # Ensure postfix was started properly
         service postfix restart
         
