@@ -104,6 +104,15 @@ if [ -r /.firstboot.tmp ]; then
                 echo $ret
         fi
 
+        # Create database table to track execution of periodic tasks across multiple container instances
+        query="CREATE TABLE IF NOT EXISTS periodic_tasks (task_name varchar(255), last_run datetime(0), PRIMARY KEY (task_name));"
+        mysql -u $MYSQL_USER --password="$MYSQL_PASSWORD" -h $MYSQL_HOST -P 3306 $MYSQL_DATABASE -s -e "$query"
+        if [ $? -eq 0 ]; then
+                echo "Successfully created periodic_tasks DB table if didn't exist already"
+        else
+                echo "ERROR: Failed to create periodic_tasks DB table"
+        fi
+
         # MISP configuration
         echo "Creating MISP configuration files"
         cd /var/www/MISP/app/Config
@@ -156,6 +165,9 @@ __WELCOME__
 
 	#Add crontab to sync data from remote servers
 	service cron start
+
+	# Schedule periodic task "sendPeriodicSummaryToUsers" at 6am EST
+	{ crontab -l 2>/dev/null || true; echo "0 11 * * * /usr/local/bin/run_sendPeriodicSummary_task.sh"; } | crontab -
 	
 	##Schedule to sync all servers every hour
 	{ crontab -l 2>/dev/null || true; echo "0 * * * * /var/www/MISP/app/Console/cake Server pullAll 2 full"; } | crontab -

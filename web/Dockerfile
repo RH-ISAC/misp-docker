@@ -87,6 +87,11 @@ RUN chmod 0755 /run.sh && touch /.firstboot.tmp
 WORKDIR /var/www/MISP
 RUN tar czpf /root/MISP.tgz .
 
+# Add script to handle execution of sendPeriodicSummaryToUsers
+# periodic task across multiple container instances 
+ADD run_sendPeriodicSummary_task.sh /usr/local/bin/run_sendPeriodicSummary_task.sh
+RUN chmod +x /usr/local/bin/run_sendPeriodicSummary_task.sh
+
 VOLUME /var/www/MISP
 EXPOSE 80
 ENTRYPOINT ["/run.sh"]
