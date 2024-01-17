@@ -1200,7 +1200,8 @@ installDepsPhp74 () {
   php-json php-xml php-mysql php7.4-opcache php-readline php-mbstring php-zip \
   php-redis php-gnupg \
   php-intl php-bcmath \
-  php-gd
+  php-gd \
+  php-curl
 
   for key in upload_max_filesize post_max_size max_execution_time max_input_time memory_limit
   do
